@@ -1,0 +1,9 @@
+{
+    "prefix": ";",
+    "token": "",
+    "yttoken": "",
+    "botname": "",
+    "playcom": ["p","play"],
+    "skipcom":["skip","s"],
+    "stopcom":["stop"]
+}
