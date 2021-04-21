@@ -1,8 +1,8 @@
 {
     "prefix": ";",
-    "token": "NzE0MTIzODUzNTIxMjIzNzEx.XsqFqg.M24bSwKcKcZrZsD0-rbH_oxVT5M",
-    "yttoken": "AIzaSyCiTFAvjfoAYXP-XccvPTCFf6n00GGv8wI",
-    "botname": "KatoMusic",
+    "token": "",
+    "yttoken": "",
+    "botname": "",
     "playcom": ["p","play"],
     "skipcom":["skip","s"],
     "stopcom":["stop"],
