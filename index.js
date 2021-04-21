@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 const Discord = require("discord.js");
-const {prefix, token, yttoken, botname, playcom, skipcom, stopcom, loopcom, color} = require("./config.json");
+const {prefix, token, yttoken, botname, playcom, skipcom, stopcom, loopcom,listcom, color} = require("./config.json");
 const ytdl = require("ytdl-core-discord");
 const YouTube = require("discord-youtube-api");
 const youtube = new YouTube(yttoken);
@@ -59,8 +59,8 @@ client.on("message", async message => {
         return;
       }
       else if(loopcom.includes(commans[0])){
-        serverQueue.sl = !serverQueue.sl;
-        if(serverQueue.sl){
+        serverQueue.serverloop = !serverQueue.serverloop;
+        if(serverQueue.serverloop){
           normalembed(message, "ตอนนี้เราได้ทำการลูปเพลงแรกใน playlist ให้แล้วนะ");
         }else{
           normalembed(message, "ตอนนี้เราได้ทำการปิดการลูปให้แล้วนะ");
@@ -72,9 +72,18 @@ client.on("message", async message => {
         const sk = skipcom.join(joincom);
         const st = stopcom.join(joincom);
         const lp = loopcom.join(joincom);
-        const helpmes = "เปิดเพลงโดยพิมพ์: " + prefix + p + "\nข้ามเพลงโดยพิมพ์: " + prefix + sk + "\nหยุดเล่นเพลงทั้งหมด: " + prefix + st + "\nลูปเพลงที่กำลังเล่น: " + prefix + lp
+        const li = listcom.join(joincom);
+        const helpmes = "เปิดเพลงโดยพิมพ์: " + prefix + p + "\nข้ามเพลงโดยพิมพ์: " + prefix + sk + "\nหยุดเล่นเพลงทั้งหมด: " + prefix + st + "\nลูปเพลงที่กำลังเล่น: " + prefix + lp + "\nแสดงรายการเพลง: " + prefix + li
         normalembed(message, helpmes);
         return;
+      }else if(listcom.includes(commans[0])){
+        const checklist = []
+        for(i = 0; i < serverQueue.songs.length;i++){
+          const num = i + 1
+          const addchecklist = num + "." + serverQueue.songs[i].title
+          checklist.push(addchecklist)
+        }
+        normalembed(message, checklist.join("\n"));
       }
     }
 }
@@ -99,23 +108,20 @@ async function execute(message, serverQueue) {
       length: songInfo.length,
       thumbnail: songInfo.thumbnail
     }
-    const song2 = songInfo.title
-  
+
     if (!serverQueue) {
       const queueContruct = {
         textChannel: message.channel,
         voiceChannel: voiceChannel,
         connection: null,
         songs: [],
-        songlist: [],
-        sl: false,
+        serverloop: false,
         cl: 0,
         vol: 100,
         playing: true
       };
       queue.set(message.guild.id, queueContruct);
       queueContruct.songs.push(song);
-      queueContruct.songlist.push(song2);
       try {
         var connection = await voiceChannel.join();
         queueContruct.connection = connection;
@@ -175,17 +181,15 @@ async function play(guild, song) {
     const dispatcher = serverQueue.connection
     dispatcher.play(await ytdl(song.url), { type: 'opus' })
     .on("finish", () => {
-    if (serverQueue.sl === true){
+    if (serverQueue.serverloop === true){
         console.log("loop");
+        play(guild, serverQueue.songs[0]);
     }else{
         serverQueue.songs.shift();
-        serverQueue.songlist.shift();
+        play(guild, serverQueue.songs[0]);
     }
-    play(guild, serverQueue.songs[0]);
     })
     .on("error", error => console.error(error));
-
-
     console.log('Playing : ' + song.title + ' (' + song.length + ')');
     serverQueue.textChannel.send(
         new Discord.MessageEmbed()

@@ -1,11 +1,12 @@
 {
     "prefix": ";",
-    "token": "",
-    "yttoken": "",
-    "botname": "",
+    "token": "NzE0MTIzODUzNTIxMjIzNzEx.XsqFqg.M24bSwKcKcZrZsD0-rbH_oxVT5M",
+    "yttoken": "AIzaSyCiTFAvjfoAYXP-XccvPTCFf6n00GGv8wI",
+    "botname": "KatoMusic",
     "playcom": ["p","play"],
     "skipcom":["skip","s"],
     "stopcom":["stop"],
     "loopcom":["loop","l"],
+    "listcom":["list","sl"],
     "color":"#04ff00"
 }
