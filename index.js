@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 const Discord = require("discord.js");
-const {prefix, token, yttoken, botname, playcom, skipcom, stopcom} = require("./config.json");
+const {prefix, token, yttoken, botname, playcom, skipcom, stopcom, loopcom, color} = require("./config.json");
 const ytdl = require("ytdl-core-discord");
 const YouTube = require("discord-youtube-api");
 const youtube = new YouTube(yttoken);
@@ -18,7 +18,6 @@ client.once("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setStatus('Online');
     client.user.setActivity( prefix + 'help เพื่อดูคำสั่ง');
-    const vol = 5;
   });
   
 client.once("reconnecting", () => {
@@ -28,6 +27,17 @@ client.once("reconnecting", () => {
 client.once("disconnect", () => {
   console.log("Disconnect!");
 });
+/*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*/
+async function normalembed(message, embedtext){
+  message.channel.send(
+    new Discord.MessageEmbed()
+    .setColor(color)
+    .setTitle(botname)
+    .setDescription(embedtext)
+  );
+}
 /*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*/
@@ -48,6 +58,24 @@ client.on("message", async message => {
         stop(message, serverQueue);
         return;
       }
+      else if(loopcom.includes(commans[0])){
+        serverQueue.sl = !serverQueue.sl;
+        if(serverQueue.sl){
+          normalembed(message, "ตอนนี้เราได้ทำการลูปเพลงแรกใน playlist ให้แล้วนะ");
+        }else{
+          normalembed(message, "ตอนนี้เราได้ทำการปิดการลูปให้แล้วนะ");
+        }
+        return;
+      }else if(commans[0] == "help"){
+        const joincom = ", " + prefix
+        const p = playcom.join(joincom);
+        const sk = skipcom.join(joincom);
+        const st = stopcom.join(joincom);
+        const lp = loopcom.join(joincom);
+        const helpmes = "เปิดเพลงโดยพิมพ์: " + prefix + p + "\nข้ามเพลงโดยพิมพ์: " + prefix + sk + "\nหยุดเล่นเพลงทั้งหมด: " + prefix + st + "\nลูปเพลงที่กำลังเล่น: " + prefix + lp
+        normalembed(message, helpmes);
+        return;
+      }
     }
 }
 );
@@ -58,14 +86,10 @@ async function execute(message, serverQueue) {
     const args = message.content.split(" ");
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel)
-      return message.channel.send(
-        "เข้าไปห้องคุยแบบเสียงก่อนสิเดียวเปิดเพลงให้"
-      );
+      normalembed(message, "เข้าไปห้องคุยแบบเสียงก่อนสิเดียวเปิดเพลงให้");
     const permissions = voiceChannel.permissionsFor(message.client.user);
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      return message.channel.send(
-        "เราไม่มีสิทธิเข้าห้องรนั้นอะ"
-      );
+      normalembed(message, "เราไม่มีสิทธิเข้าห้องรนั้นอะ");
     }
     args.shift();
     const songInfo = await youtube.searchVideos(args.join("_"));
@@ -103,18 +127,19 @@ async function execute(message, serverQueue) {
       }
     } else {
       serverQueue.songs.push(song);
-      const addsong = new Discord.MessageEmbed()
-        .setColor('#04ff00')
-        .setTitle(botname)
-        .setDescription('ทำการเพิ่มเพลง')
-        .setThumbnail(songInfo.thumbnail)
-        .addFields(
-          { name: 'ชื่อเพลง', value: songInfo.title },
-          { name: 'ความยาวเพลง', value: songInfo.length, inline: true},
-          { name: 'URL', value: songInfo.url, inline: true},
-          { name: 'คิวที่', value: serverQueue.songs.length, inline: true}
-        )
-      return message.channel.send(addsong);
+      return message.channel.send(
+          new Discord.MessageEmbed()
+          .setColor(color)
+          .setTitle(botname)
+          .setDescription('ทำการเพิ่มเพลง')
+          .setThumbnail(songInfo.thumbnail)
+          .addFields(
+            { name: 'ชื่อเพลง', value: songInfo.title },
+            { name: 'ความยาวเพลง', value: songInfo.length, inline: true},
+            { name: 'URL', value: songInfo.url, inline: true},
+            { name: 'คิวที่', value: serverQueue.songs.length, inline: true}
+          )
+      );
     }
 }
 /*---------------------------------------------------------------------------*/
@@ -122,21 +147,17 @@ async function execute(message, serverQueue) {
 /*---------------------------------------------------------------------------*/
 function skip(message, serverQueue) {
     if (!message.member.voice.channel)
-        return message.channel.send(
-            "อยู่ในห้องที่เปิดเพลงก่อนนะแล้วค่อยข้ามเพลง"
-        );
+      normalembed(message, "อยู่ในห้องที่เปิดเพลงก่อนนะแล้วค่อยข้ามเพลง");
     if (!serverQueue)
-        return message.channel.send("เพลงหมดแล้วไม่มีให้ฟังต่อแล้ว");
-        serverQueue.connection.dispatcher.end();
+      normalembed(message, "เพลงหมดแล้วไม่มีให้ข้ามแล้ว");
+      serverQueue.connection.dispatcher.end();
 }
 /*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*/
   function stop(message, serverQueue) {
     if (!message.member.voice.channel)
-        return message.channel.send(
-            "อยู่ในห้องที่เปิดเพลงก่อนนะแล้วค่อยหยุดเพลง"
-        );
+      normalembed(message, "อยู่ในห้องที่เปิดเพลงก่อนนะแล้วค่อยหยุดเพลง");
     serverQueue.songs = [];
     serverQueue.connection.dispatcher.end();
     serverQueue.voiceChannel.leave();
@@ -168,7 +189,7 @@ async function play(guild, song) {
     console.log('Playing : ' + song.title + ' (' + song.length + ')');
     serverQueue.textChannel.send(
         new Discord.MessageEmbed()
-            .setColor('#04ff00')
+            .setColor(color)
             .setTitle(botname)
             .setDescription('กำลังเล่นเพลง')
             .setThumbnail(song.thumbnail)

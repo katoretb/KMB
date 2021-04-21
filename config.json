@@ -5,5 +5,7 @@
     "botname": "",
     "playcom": ["p","play"],
     "skipcom":["skip","s"],
-    "stopcom":["stop"]
+    "stopcom":["stop"],
+    "loopcom":["loop","l"],
+    "color":"#04ff00"
 }
