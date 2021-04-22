@@ -3,10 +3,10 @@
     "token": "",
     "yttoken": "",
     "botname": "",
-    "playcom": ["p","play"],
-    "skipcom":["skip","s"],
+    "playcom": ["p", "play"],
+    "skipcom":["skip", "s"],
     "stopcom":["stop"],
-    "loopcom":["loop","l"],
-    "listcom":["list","sl"],
+    "loopcom":["loop", "l"],
+    "listcom":["list", "sl"],
     "color":"#04ff00"
 }

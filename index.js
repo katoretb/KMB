@@ -61,7 +61,7 @@ client.on("message", async message => {
       else if(loopcom.includes(commans[0])){
         serverQueue.serverloop = !serverQueue.serverloop;
         if(serverQueue.serverloop){
-          normalembed(message, "ตอนนี้เราได้ทำการลูปเพลงแรกใน playlist ให้แล้วนะ");
+          normalembed(message, "ตอนนี้เราได้ทำการลูปเพลงใน playlist ให้แล้วนะ");
         }else{
           normalembed(message, "ตอนนี้เราได้ทำการปิดการลูปให้แล้วนะ");
         }
@@ -116,7 +116,7 @@ async function execute(message, serverQueue) {
         connection: null,
         songs: [],
         serverloop: false,
-        cl: 0,
+        countloop: 0,
         vol: 100,
         playing: true
       };
@@ -182,11 +182,16 @@ async function play(guild, song) {
     dispatcher.play(await ytdl(song.url), { type: 'opus' })
     .on("finish", () => {
     if (serverQueue.serverloop === true){
-        console.log("loop");
+      if(serverQueue.countloop < (serverQueue.songs.length)-1){
+        serverQueue.countloop++;
+        play(guild, serverQueue.songs[serverQueue.countloop]);
+      }else{
+        serverQueue.countloop = 0;
         play(guild, serverQueue.songs[0]);
+      }
     }else{
-        serverQueue.songs.shift();
-        play(guild, serverQueue.songs[0]);
+      serverQueue.songs.shift();
+      play(guild, serverQueue.songs[0]);
     }
     })
     .on("error", error => console.error(error));
