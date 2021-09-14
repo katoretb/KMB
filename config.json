@@ -2,11 +2,14 @@
     "prefix": ";",
     "token": "",
     "yttoken": "",
-    "botname": "",
+    "botname": "KatoMusic",
     "playcom": ["p", "play"],
     "skipcom":["skip", "s"],
     "stopcom":["stop"],
     "loopcom":["loop", "l"],
     "listcom":["list", "sl"],
+    "covidcom":["covid"],
+    "infocom":["info"],
+    "tictactoecom":["ttt"],
     "color":"#04ff00"
 }
