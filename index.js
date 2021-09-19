@@ -427,6 +427,25 @@ async function play(guild, song) {
 }
 /*---------------------------------------------------------------------------*/
 
+/*if kiked from voice---------------------------------------------------------------------------*/
+
+client.on('voiceStateUpdate', (oldState, newState) => {
+  if (oldState.channelID === null || typeof oldState.channelID == 'undefined') return;
+    if (newState.id !== client.user.id) return;
+    const serverQueue = queue.get(oldState.guild.id);
+    queue.delete(oldState.guild.id);
+    serverQueue.textChannel.send(
+      new Discord.MessageEmbed()
+          .setColor(color)
+          .setTitle(botname)
+          .setDescription('กำลังเปิดเพลงให้เลยอย่าเตะกันสิ')
+    );
+    serverQueue.songs = [];
+    serverQueue.voiceChannel.leave();
+    return;
+})
+/*---------------------------------------------------------------------------*/
+
 /*---------------------------------------------------------------------------*/
 client.login(token);
 /*---------------------------------------------------------------------------*/
